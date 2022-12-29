@@ -4,16 +4,16 @@ const reactionschema = require("./Reactions");
 // Schema to create Student model
 const thoughtSchema = new Schema(
   {
-    thoughttext: {
+    thoughtText: {
       type: String,
       required: true,
       max_length: 250,
     },
-    createdat: {
+    createdAt: {
       type: Date,
       default: Date.now,
     },
-    username: {
+    userame: {
       type: String,
       required: true,
     },
@@ -25,6 +25,11 @@ const thoughtSchema = new Schema(
     },
   }
 );
+
+
+thoughtSchema.virtual('reactionCount').get(function () {
+    return this.reactions.length;
+  });
 
 const Thought = model("thought", thoughtSchema);
 
