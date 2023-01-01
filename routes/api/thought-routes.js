@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { User, Thought } = require('../../models');
 
-router.get('/test', (reg,res) => res.send(`API express routes working for thoughts.`))
+router.get('/test', (req,res) => res.send(`API express routes working for thoughts.`))
 
 
 router.get('/', async (req, res) => {
@@ -37,31 +37,29 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-    console.log(req.body.reactions[0].reactionBody)
     Thought.findOneAndUpdate(
         { _id: req.params.id },
-        { username: req.body.username,
-          thoughtText: req.body.thoughtText, 
-          $push: { reactions: { reactionBody: req.body.reactions[0].reactionBody,
-          username: req.body.reactions[0].username } } },
+        {
+            $set: req.body
+         },
         { runValidators: true, new: true },
-      );
+      ).then(updatedThought => res.json(updatedThought)).catch(err =>res.status(500).json(err));
 
       
-      User.findOneAndUpdate(
-        { username: req.body.username },
-        { $push: { thoughts: req.params.id } },
-        { runValidators: true, new: true },
-        (err, result) => {
-          if (result) {
-            res.status(200).json(result);
-            console.log(`Updated: ${result}`);
-          } else {
-            console.log('Uh Oh, something went wrong');
-            res.status(500).json({ error: 'Something went wrong' });
-          }
-        }
-      );
+      // User.findOneAndUpdate(
+      //   { username: req.body.username },
+      //   { $push: { thoughts: req.params.id } },
+      //   { runValidators: true, new: true },
+      //   (err, result) => {
+      //     if (result) {
+      //       res.status(200).json(result);
+      //       console.log(`Updated: ${result}`);
+      //     } else {
+      //       console.log('Uh Oh, something went wrong');
+      //       res.status(500).json({ error: 'Something went wrong' });
+      //     }
+      //   }
+      // );
 });
 
 router.delete('/:id', async (req, res) => {
